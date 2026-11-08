@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valheim Helper</title>
+<style>
+:root{
+  --bg:#111715; --panel:#1a2420; --panel2:#22302a; --line:#405047;
+  --text:#f2ead7; --muted:#b9b49f; --gold:#d2a33d; --ember:#dc7b35;
+  --good:#78c69b; --danger:#e07070; --shadow:0 12px 30px #0008;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#26352d 0,#111715 38rem);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.shell{max-width:1500px;margin:auto;padding:18px}
+header{display:flex;gap:18px;align-items:center;justify-content:space-between;padding:18px 20px;background:#121a17e8;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+h1{margin:0;font-family:Georgia,serif;letter-spacing:.04em;color:#f2d385;font-size:clamp(22px,4vw,34px)}
+.subtitle{color:var(--muted);margin-top:3px}.status{color:var(--good);font-size:13px;text-align:right}
+.topic-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.topic-tab{border:1px solid var(--line);background:#17211d;color:var(--text);padding:9px 14px;border-radius:9px}.topic-tab.active{background:var(--gold);color:#17130b;border-color:#f0c45b;font-weight:800}.topic-tab:disabled{opacity:.5;cursor:not-allowed}
+.toolbar,.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow)}
+.toolbar{padding:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.segment{display:inline-flex;background:#0d1311;border:1px solid #3c4842;border-radius:9px;padding:3px}.segment button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:6px}.segment button.active{background:#d2a33d;color:#17130b;font-weight:800}
+.action{border:1px solid #66756d;background:#26342e;color:var(--text);padding:8px 12px;border-radius:8px}.action:hover{border-color:#d2a33d}.action.primary{background:#7e5c1d;border-color:#d2a33d}.action.danger{border-color:#9d4f4f}.spacer{flex:1}.hint{color:var(--muted);font-size:13px}
+.layouts{display:flex;flex-direction:column;gap:16px}.card{padding:14px;min-width:0}.card-head{display:flex;align-items:center;gap:12px;flex-wrap:nowrap;margin-bottom:11px}.wall-name{flex:1;min-width:140px;background:#101714;border:1px solid #56655d;border-radius:6px;color:#f2d385;padding:6px 8px;font-weight:800;font-size:17px}.dim{display:flex;align-items:center;gap:5px;color:var(--muted);white-space:nowrap}.dim input{width:59px;background:#101714;border:1px solid #56655d;border-radius:6px;color:var(--text);padding:5px}.dim button{width:30px;height:30px;padding:0;border-radius:6px;border:1px solid #56655d;background:#26342e;color:var(--text)}
+.grid-wrap{overflow:auto;padding:4px}.chest-grid{display:grid;gap:5px;min-width:270px}.chest{position:relative;min-height:58px;border:2px solid #5d4930;border-radius:6px;background:linear-gradient(#3a2f25,#211b16);box-shadow:inset 0 0 0 2px #17120e, inset 0 -8px 14px #0006;color:white;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px;font-weight:800;letter-spacing:.03em;text-shadow:0 2px 2px #000;overflow:hidden}.chest:before{content:"";position:absolute;left:8%;right:8%;top:44%;border-top:2px solid #765d39}.chest:after{content:"";position:absolute;width:11px;height:8px;top:calc(44% - 3px);background:#b18c42;border:1px solid #6f511b}.chest span,.chest input,.chest select{position:relative;z-index:1}
+.chest.selectable{cursor:pointer}.chest.selected{border-color:#ffd65a;box-shadow:0 0 0 3px #ffd65a55,0 0 18px #ffd65a66,inset 0 0 0 2px #17120e}.wall-editor{margin-top:12px;padding:11px;border:1px solid #59685f;border-radius:9px;background:#111915;display:grid;grid-template-columns:auto minmax(140px,1fr) auto minmax(100px,150px);gap:8px;align-items:center}.wall-editor .edit-title{color:#f2d385;font-weight:800;white-space:nowrap}.wall-editor input[type=text]{min-width:0;background:#0d1311;border:1px solid #68786f;color:white;border-radius:6px;padding:7px;font-weight:700}.wall-editor input[type=color]{width:42px;height:34px;background:#111;border:1px solid #68786f;border-radius:6px}.wall-editor select{background:#0d1311;color:white;border:1px solid #68786f;border-radius:6px;padding:6px}.format-line{grid-column:1/-1;display:flex;gap:6px}.format-line input{flex:1;min-width:0;background:#090e0c;border:1px solid #46534d;color:#d2d8d4;padding:7px;border-radius:6px;font:12px ui-monospace,monospace}.format-line button{border:1px solid #d2a33d;background:#7e5c1d;color:white;border-radius:6px;padding:7px 12px;font-weight:800}@media(max-width:700px){.wall-editor{grid-template-columns:auto 1fr}.format-line{grid-column:1/-1}}
+.info-panel{margin-top:16px;padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow)}.info-panel h2{margin:0 0 8px;color:#f2d385}.info-panel h3{margin:16px 0 5px;color:#e7c66e;font-size:15px}.info-panel p,.info-panel li{color:var(--muted)}.info-panel ul,.info-panel ol{margin:6px 0;padding-left:22px}.info-panel code{color:#fff;background:#0d1311;border:1px solid #3c4842;padding:1px 5px;border-radius:4px}.empty-note{color:var(--muted);padding:25px;text-align:center}.footer-note{margin:16px 2px;color:var(--muted);font-size:13px}.toast{position:fixed;right:18px;bottom:18px;background:#e7c66e;color:#18130b;padding:10px 14px;border-radius:9px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none;font-weight:700}.toast.show{opacity:1;transform:none}
+@media(max-width:600px){.shell{padding:9px}.card-head{flex-wrap:wrap}.wall-name{flex-basis:100%}header{align-items:flex-start;flex-direction:column}.status{text-align:left}.toolbar{align-items:stretch}.spacer{display:none}.action{flex:1}.chest{min-height:64px}}
+</style>
+</head>
+<body>
+<div class="shell" id="app">
+<header>
+  <div><h1>Valheim Helper</h1></div>
+  <div class="status" id="status">Autosave ready</div>
+</header>
+
+<nav class="topic-tabs" aria-label="Dashboard topics">
+  <button class="topic-tab active" data-topic="chests">Chest Walls</button>
+  <button class="topic-tab" disabled title="Use the developer note in this HTML to add the next topic">+ Next Topic</button>
+</nav>
+
+<section class="toolbar" aria-label="Chest wall controls">
+  <div class="segment" aria-label="Mode">
+    <button type="button" id="layoutMode" class="active">Layout</button>
+    <button type="button" id="labelMode">Labeling</button>
+  </div>
+  <span class="spacer"></span>
+  <button class="action primary" id="saveBtn">Save now</button>
+  <button class="action" id="exportBtn">Export settings</button>
+  <button class="action" id="importBtn">Import settings</button>
+  <button class="action" id="resetBtn">Reset to defaults</button>
+  <button class="action danger" id="clearBtn">Clear all</button>
+  <input type="file" id="fileInput" accept="application/json,.json" hidden>
+</section>
+
+<main class="layouts" id="layouts"></main>
+<section class="info-panel" aria-labelledby="info-title">
+  <h2 id="info-title">Info &amp; How To</h2>
+  <p><strong>Valheim Helper</strong> is a browser-based planner for organizing chest walls and creating color-formatted Valheim sign labels.</p>
+  <h3>Plan a chest wall</h3>
+  <ol><li>Edit the wall name, rows, and columns at the top of each wall.</li><li>Choose <strong>Labeling</strong>, then click a chest to select it.</li><li>Edit the selected chest below the wall, choose a color, and use <strong>Copy format</strong> to copy the Valheim-ready label.</li></ol>
+  <h3>Saving</h3>
+  <ul><li>Changes save automatically in this browser.</li><li><strong>Export settings</strong> creates a portable JSON backup.</li><li><strong>Import settings</strong> restores a JSON backup.</li><li><strong>Reset to defaults</strong> restores the included layouts. <strong>Clear all</strong> starts blank.</li></ul>
+  <h3>Using a copied label</h3>
+  <p>Copy the generated text, edit a sign in Valheim, and paste it into the sign text field. Example: <code>&lt;color=#ffff00&gt;STAMINA&lt;/color&gt;</code>.</p>
+  <h3>Privacy</h3>
+  <p>No account or server is required. Settings remain in the browser unless exported by the user.</p>
+</section>
+<p class="footer-note"><strong>Persistence:</strong> Browser storage is tied to this page address and browser profile. Export a JSON backup before changing devices, browsers, or site addresses.</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!--
+========================================================================
+AI / HUMAN DEVELOPER NOTE: HOW TO ADD AND LINK THE NEXT DASHBOARD TOPIC
+========================================================================
+This is intentionally a single-file, dependency-free dashboard.
+
+Recommended pattern:
+1. Add a new enabled button inside <nav class="topic-tabs">:
+   <button class="topic-tab" data-topic="lighting">Lighting Planner</button>
+2. Add a renderer such as renderLighting() in the final <script>.
+3. Update selectTopic(topic) to call renderLighting() when topic === "lighting".
+4. Store new settings under state.topics.lighting so existing chest-wall saves remain compatible.
+5. Never rename STORAGE_KEY unless deliberately starting a new save namespace.
+6. If splitting into separate HTML files instead, use normal relative links such as:
+   <a href="lighting.html">Lighting Planner</a>
+   Keep shared state under the same localStorage key and data schema.
+7. Increment state.version only when a migration is required. Add migration logic in normalizeState().
+8. Preserve export/import of the complete state object, not only the visible topic.
+
+Browser limitation: a normal webpage cannot silently read a JSON file from its folder on startup.
+That requires a server, browser permission, or a packaged app. This file therefore uses localStorage
+for automatic loading and offers explicit JSON export/import for portable backups.
+========================================================================
+-->
+<script>
+(() => {
+'use strict';
+const STORAGE_KEY = 'jake-valheim-dashboard-v1';
+const defaults = {
+  version: 1,
+  activeTopic: 'chests',
+  topics: { chests: { mode: 'layout', showFormatting: false, tables: [
+    {name:'Main Chest Wall', rows:4, cols:10, cells:{
+      '3:0':{text:'WOOD',color:'#ffff00'},
+      '3:1':{text:'STONE',color:'#ffffff'},
+      '3:2':{text:'ORE',color:'#ffffff'},
+      '0:3':{text:'PARTS',color:'#ffffff'},
+      '1:3':{text:'BLACK',color:'#ffffff'},
+      '2:3':{text:'OTHER',color:'#ffffff'},
+      '3:3':{text:'IRON',color:'#ffffff'},
+      '3:4':{text:'HIDE',color:'#ffff00'},
+      '3:5':{text:'MONSTER',color:'#ff00ff'},
+      '3:6':{text:'FARM/FORAGE',color:'#ffff00'},
+      '3:7':{text:'CORE/MAGIC',color:'#00ffff'},
+      '3:8':{text:'TROPHY',color:'#ff00ff'},
+      '2:9':{text:'RESIN',color:'#ffff00'},
+      '1:9':{text:'TAR',color:'#ff00ff'},
+      '3:9':{text:'SPECIAL',color:'#ffffff'}
+    }},
+    {name:'Pantry', rows:4, cols:5, cells:{
+      '3:0':{text:'STAMINA',color:'#ffff00'},
+      '3:1':{text:'HEALTH',color:'#ff4040'},
+      '3:2':{text:'EITR',color:'#ff00ff'},
+      '3:3':{text:'FEASTS',color:'#ffffff'},
+      '3:4':{text:'EMPTY',color:'#ffffff'}
+    }},
+    {name:'Low Storage', rows:2, cols:6, cells:{}}
+  ]}}
+};
+let state = loadState();
+const $ = id => document.getElementById(id);
+const layouts = $('layouts'), status = $('status'), toast = $('toast');
+
+function clone(x){ return JSON.parse(JSON.stringify(x)); }
+function normalizeState(raw){
+  const d=clone(defaults);
+  if(!raw || typeof raw!=='object') return d;
+  const c=raw.topics?.chests;
+  if(!c || !Array.isArray(c.tables)) return d;
+  d.topics.chests.mode = c.mode==='labeling'?'labeling':'layout';
+  d.topics.chests.showFormatting = !!c.showFormatting;
+  d.topics.chests.tables = c.tables.slice(0,12).map((t,i)=>({
+    name:String(t.name||`Storage ${i+1}`).slice(0,40),
+    rows:clampInt(t.rows,1,12,4), cols:clampInt(t.cols,1,16,4),
+    cells:(t.cells && typeof t.cells==='object')?t.cells:{}
+  }));
+  return d;
+}
+function loadState(){
+  try { return normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY))); }
+  catch(e){ return clone(defaults); }
+}
+let saveTimer;
+function save(auto=true){
+  clearTimeout(saveTimer);
+  const run=()=>{ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); status.textContent='Saved automatically'; if(!auto) say('Settings saved');}catch(e){status.textContent='Could not save in this browser';}};
+  if(auto){ status.textContent='Saving…'; saveTimer=setTimeout(run,250); } else run();
+}
+function clampInt(v,min,max,fallback){ const n=parseInt(v,10); return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback; }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function say(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1500);}
+function chestState(table,key){ return table.cells[key] || {text:'',color:'#ffffff'}; }
+function valheimText(cell){ return `<color=${cell.color || '#ffffff'}>${cell.text || ''}</color>`; }
+
+function render(){
+  const c=state.topics.chests;
+  $('layoutMode').classList.toggle('active',c.mode==='layout');
+  $('labelMode').classList.toggle('active',c.mode==='labeling');
+  layouts.innerHTML='';
+  c.tables.forEach((table,ti)=>layouts.appendChild(renderTable(table,ti,c)));
+}
+function renderTable(table,ti,cfg){
+  const card=document.createElement('section'); card.className='card';
+  card.innerHTML=`<div class="card-head"><input class="wall-name" data-wall-name type="text" maxlength="40" aria-label="Chest wall name" value="${esc(table.name)}">
+    <label class="dim">Rows <button type="button" data-delta="r-">−</button><input data-dim="rows" type="number" min="1" max="12" value="${table.rows}"><button type="button" data-delta="r+">+</button></label>
+    <label class="dim">Cols <button type="button" data-delta="c-">−</button><input data-dim="cols" type="number" min="1" max="16" value="${table.cols}"><button type="button" data-delta="c+">+</button></label></div>`;
+  const wrap=document.createElement('div'); wrap.className='grid-wrap';
+  const grid=document.createElement('div'); grid.className='chest-grid'; grid.style.gridTemplateColumns=`repeat(${table.cols},minmax(68px,1fr))`;
+  let selectedKey=table._selected || '0:0';
+  const validKey=k=>{const [r,c]=k.split(':').map(Number);return r>=0&&r<table.rows&&c>=0&&c<table.cols};
+  if(!validKey(selectedKey)) selectedKey='0:0';
+  table._selected=selectedKey;
+  let editorHost;
+  const selectChest=(key)=>{table._selected=key; card.querySelectorAll('.chest').forEach(x=>x.classList.toggle('selected',x.dataset.key===key)); renderEditor(key);};
+  for(let r=0;r<table.rows;r++) for(let col=0;col<table.cols;col++){
+    const key=`${r}:${col}`, cell=chestState(table,key), el=document.createElement('div'); el.className='chest'; el.dataset.key=key;
+    el.innerHTML=`<span>${cell.text?esc(cell.text):`R${r+1} C${col+1}`}</span>`;
+    if(cell.text) el.style.color=cell.color;
+    if(cfg.mode==='labeling'){
+      el.classList.add('selectable');
+      if(key===selectedKey) el.classList.add('selected');
+      el.title='Click to edit this chest label';
+      el.addEventListener('click',()=>selectChest(key));
+    }
+    grid.appendChild(el);
+  }
+  wrap.appendChild(grid);card.appendChild(wrap);
+  if(cfg.mode==='labeling'){
+    editorHost=document.createElement('div'); card.appendChild(editorHost); renderEditor(selectedKey);
+  }
+  function renderEditor(key){
+    if(!editorHost) return;
+    const cell=chestState(table,key), [r,c]=key.split(':').map(Number);
+    editorHost.innerHTML=`<div class="wall-editor"><div class="edit-title">R${r+1} C${c+1}</div><input data-edit-text type="text" maxlength="60" placeholder="Chest label" value="${esc(cell.text)}"><input data-edit-color type="color" aria-label="Label color" value="${/^#[0-9a-f]{6}$/i.test(cell.color)?cell.color:'#ffffff'}"><select data-edit-preset aria-label="Color preset"><option value="">Color…</option><option value="#ffffff">White</option><option value="#ffff00">Yellow</option><option value="#00ffff">Aqua</option><option value="#ff00ff">Magenta</option></select><div class="format-line"><input data-format readonly aria-label="Valheim formatted label"><button type="button" data-copy>Copy format</button></div></div>`;
+    const text=editorHost.querySelector('[data-edit-text]'), color=editorHost.querySelector('[data-edit-color]'),preset=editorHost.querySelector('[data-edit-preset]'), out=editorHost.querySelector('[data-format]'),copy=editorHost.querySelector('[data-copy]');
+    const update=()=>{table.cells[key]={text:text.value,color:color.value};out.value=valheimText(table.cells[key]);const chest=card.querySelector(`.chest[data-key="${key}"]`);chest.querySelector('span').textContent=text.value||`R${r+1} C${c+1}`;chest.style.color=text.value?color.value:'white';save();};
+    out.value=valheimText(cell); text.focus(); text.addEventListener('input',update);color.addEventListener('input',update);preset.addEventListener('change',()=>{if(preset.value){color.value=preset.value;update();}});copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(out.value);say('Formatting copied');}catch(e){out.select();document.execCommand('copy');say('Formatting copied');}});
+  }
+  const nameInput=card.querySelector('[data-wall-name]');
+  nameInput.addEventListener('input',()=>{table.name=nameInput.value.slice(0,40);save();});
+  card.querySelectorAll('[data-dim]').forEach(inp=>inp.addEventListener('change',()=>{table[inp.dataset.dim]=clampInt(inp.value,1,inp.dataset.dim==='rows'?12:16,4);save();render();}));
+  card.querySelectorAll('[data-delta]').forEach(btn=>btn.addEventListener('click',()=>{const d=btn.dataset.delta,prop=d[0]==='r'?'rows':'cols',max=prop==='rows'?12:16;table[prop]=Math.max(1,Math.min(max,table[prop]+(d[1]==='+'?1:-1)));save();render();}));
+  return card;
+}
+function setMode(mode){state.topics.chests.mode=mode;save();render();}
+$('layoutMode').addEventListener('click',()=>setMode('layout'));
+$('labelMode').addEventListener('click',()=>setMode('labeling'));
+$('saveBtn').addEventListener('click',()=>save(false));
+$('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='valheim-dashboard-settings.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);say('Settings exported');});
+$('importBtn').addEventListener('click',()=>$('fileInput').click());
+$('fileInput').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{state=normalizeState(JSON.parse(await f.text()));save(false);render();say('Settings imported');}catch(err){say('Invalid settings file');}e.target.value='';});
+$('resetBtn').addEventListener('click',()=>{if(confirm('Reset to the Valheim Helper defaults we established?')){state=clone(defaults);save(false);render();say('Defaults restored');}});
+$('clearBtn').addEventListener('click',()=>{if(confirm('Clear every wall name, label, and custom setting?')){state=clone(defaults);state.topics.chests.tables=defaults.topics.chests.tables.map((t,i)=>({name:'',rows:t.rows,cols:t.cols,cells:{}}));save(false);render();say('All settings cleared');}});
+
+// Future topic router: extend this function when adding another dashboard tab.
+function selectTopic(topic){ state.activeTopic=topic; document.querySelectorAll('.topic-tab[data-topic]').forEach(b=>b.classList.toggle('active',b.dataset.topic===topic)); if(topic==='chests') render(); save(); }
+document.querySelectorAll('.topic-tab[data-topic]').forEach(b=>b.addEventListener('click',()=>selectTopic(b.dataset.topic)));
+render();
+})();
+</script>
+</body>
+</html>
